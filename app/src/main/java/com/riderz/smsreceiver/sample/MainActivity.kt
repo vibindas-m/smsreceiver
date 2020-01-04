@@ -1,9 +1,10 @@
-package com.pravinkumarputta.android.smsreceiverdemo
+package com.riderz.smsreceiver.sample
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import com.pravinkumarputta.android.smsreceiver.SMSBroadcastReceiver
-import com.pravinkumarputta.android.smsreceiver.SMSReceiver
+import androidx.appcompat.app.AppCompatActivity
+import com.pravinkumarputta.android.smsreceiverdemo.R
+import com.riderz.smsreceiver.SMSBroadcastReceiver
+import com.riderz.smsreceiver.SMSReceiver
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), SMSBroadcastReceiver.OTPReceiveListener {

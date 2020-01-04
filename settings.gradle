@@ -1,1 +1,2 @@
-include ':app', ':smsreceiver'
+include ':app'
+include ':smsreceiver'
