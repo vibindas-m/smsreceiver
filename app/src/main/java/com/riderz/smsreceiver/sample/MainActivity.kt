@@ -12,13 +12,12 @@ class MainActivity : AppCompatActivity(), SMSBroadcastReceiver.OTPReceiveListene
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        smsReceiver = SMSReceiver(this, this)
-        tvOtpHashCode.text = SMSReceiver.hashKey
-        tvOtpSampleMessage.text = "<#> One time password is 12345678\n${SMSReceiver.hashKey}"
+        smsReceiver = SMSReceiver(this, this, "OTP",6)
+        tvOtpSampleMessage.text = "One time password is 12345678\n${SMSReceiver.hashKey}"
 
         btSubmit.setOnClickListener {
             btSubmit.isEnabled = false
-            smsReceiver!!.startSmsListener()
+            smsReceiver?.startSmsListener()
         }
     }
 

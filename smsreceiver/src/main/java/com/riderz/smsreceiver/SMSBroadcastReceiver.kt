@@ -7,6 +7,7 @@ import android.util.Log
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
+import java.util.regex.Pattern
 
 class SMSBroadcastReceiver : BroadcastReceiver() {
     companion object {
@@ -23,23 +24,23 @@ class SMSBroadcastReceiver : BroadcastReceiver() {
             when (status.statusCode) {
                 CommonStatusCodes.SUCCESS -> {
                     // Get SMS message contents
-                    val otp = extras[SmsRetriever.EXTRA_SMS_MESSAGE] as String?
-                    Log.d("OTP_Message", otp)
+                    val message = extras[SmsRetriever.EXTRA_SMS_MESSAGE] as String?
+                    Log.d("OTP_Message", message)
                     // Extract one-time code from the message and complete verification
 // by sending the code back to your server for SMS authenticity.
 // But here we are just passing it to MainActivity
-                    if (otpReceiver != null) { //                        otp = otp.replace("<#> Your ExampleApp code is: ", "").split("\n").dropLastWhile { it.isEmpty() }.toTypedArray()[0]
-                        otpReceiver!!.onSMSReceived(
-                            otp!!.replaceFirst("<#>".toRegex(), "").replace(
-                                SMSReceiver.hashKey,
-                                ""
-                            ).trim({ it <= ' ' })
-                        )
+                    if (otpReceiver != null && SMSUtils.checkMustContainWord(message, SMSReceiver.containWord)) {
+                        val otp = SMSUtils.parseOTP(message, SMSReceiver.length)
+                        if(otp.isNotEmpty()) {
+                            otpReceiver?.onSMSReceived(
+                                otp
+                            )
+                        }
                     }
                 }
                 CommonStatusCodes.TIMEOUT ->  // Waiting for SMS timed out (5 minutes)
 // Handle the error ...
-                    otpReceiver!!.onSMSReceiverTimeOut()
+                    otpReceiver?.onSMSReceiverTimeOut()
             }
         }
     }

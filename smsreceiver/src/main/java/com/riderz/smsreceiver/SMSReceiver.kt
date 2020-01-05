@@ -11,24 +11,40 @@ import com.google.android.gms.common.api.GoogleApiClient.Builder
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks
 import com.google.android.gms.tasks.Task
 
+/**
+ * mustContainWord : String : set word to should contain on message, (ignore Case = true)
+ * otpLength: Int : set OTP length, default value = 6
+ */
 class SMSReceiver(
-    private var activity: Activity?,
-    private var onSMSReceiverCallback: SMSBroadcastReceiver.OTPReceiveListener?
+    private var activity: Activity,
+    private var onSMSReceiverCallback: SMSBroadcastReceiver.OTPReceiveListener?,
+    private val mustContainWord: String?,
+    private val otpLength: Int? = null
 ) {
     private var apiClient: GoogleApiClient? = null
 
     companion object {
         var hashKey = ""
+        var containWord: String = ""
+        var length: Int = 6
     }
     init {
         loadApiClient()
     }
 
     private fun loadApiClient() {
-        val appSignature =
-            AppSignatureHelper(activity)
-        hashKey = appSignature.getAppSignatures()?.get(0) ?: ""
-        apiClient = Builder(activity!!)
+//        val appSignature =
+//            AppSignatureHelper(activity)
+//        hashKey = appSignature.getAppSignatures()?.get(0) ?: ""
+
+        otpLength?.let {
+            length = it
+        }
+
+        mustContainWord?.let {
+            containWord = it
+        }
+        apiClient = Builder(activity)
             .addConnectionCallbacks(object : ConnectionCallbacks {
                 override fun onConnected(@Nullable bundle: Bundle?) {}
                 override fun onConnectionSuspended(i: Int) {}
@@ -51,7 +67,7 @@ class SMSReceiver(
     }
 
     fun startSmsListener() {
-        val client = SmsRetriever.getClient(activity!! /* context */)
+        val client = SmsRetriever.getClient(activity /* context */)
         val task: Task<*> = client.startSmsRetriever()
         // Listen for success/failure of the start Task. If in a background thread, this
 // can be made blocking using Tasks.await(task, [timeout]);

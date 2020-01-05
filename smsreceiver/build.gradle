@@ -34,11 +34,11 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
-    implementation 'com.google.android.gms:play-services-base:16.1.0'
-    implementation 'com.google.android.gms:play-services-auth-api-phone:16.0.0'
+    implementation 'com.google.android.gms:play-services-base:17.1.0'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:17.3.0'
     //Optional for phone number hint
-    implementation 'com.google.android.gms:play-services-auth:16.0.1'
-    implementation "androidx.core:core-ktx:+"
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
+    implementation "androidx.core:core-ktx:1.1.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {
