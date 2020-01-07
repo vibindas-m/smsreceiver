@@ -1,7 +1,9 @@
 package com.riderz.smsreceiver
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.os.Bundle
+import android.view.View
 import androidx.annotation.Nullable
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.auth.api.Auth
@@ -19,7 +21,8 @@ class SMSReceiver(
     private var activity: Activity,
     private var onSMSReceiverCallback: SMSBroadcastReceiver.OTPReceiveListener?,
     private val mustContainWord: String?,
-    private val otpLength: Int? = null
+    private val otpLength: Int? = null,
+    private val msgAction: MessageAction? = null
 ) {
     private var apiClient: GoogleApiClient? = null
 
@@ -27,15 +30,17 @@ class SMSReceiver(
         var hashKey = ""
         var containWord: String = ""
         var length: Int = 6
+        var messageAction: MessageAction? = null
     }
+
     init {
         loadApiClient()
     }
 
     private fun loadApiClient() {
-//        val appSignature =
-//            AppSignatureHelper(activity)
-//        hashKey = appSignature.getAppSignatures()?.get(0) ?: ""
+        val appSignature =
+            AppSignatureHelper(activity)
+        hashKey = appSignature.getAppSignatures()?.get(0) ?: ""
 
         otpLength?.let {
             length = it
@@ -44,6 +49,8 @@ class SMSReceiver(
         mustContainWord?.let {
             containWord = it
         }
+        messageAction = msgAction
+
         apiClient = Builder(activity)
             .addConnectionCallbacks(object : ConnectionCallbacks {
                 override fun onConnected(@Nullable bundle: Bundle?) {}
@@ -75,3 +82,8 @@ class SMSReceiver(
         task.addOnFailureListener { e -> onSMSReceiverCallback?.onSMSReceiverFailed(e) }
     }
 }
+
+class MessageAction(
+    val viewForSnackBar: View,
+    val actionButtonText: String
+)

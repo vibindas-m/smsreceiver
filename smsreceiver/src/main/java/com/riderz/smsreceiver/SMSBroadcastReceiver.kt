@@ -4,10 +4,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import android.view.View
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
-import java.util.regex.Pattern
+import com.google.android.material.snackbar.Snackbar
+import com.pravinkumarputta.android.smsreceiver.R
 
 class SMSBroadcastReceiver : BroadcastReceiver() {
     companion object {
@@ -29,12 +31,23 @@ class SMSBroadcastReceiver : BroadcastReceiver() {
                     // Extract one-time code from the message and complete verification
 // by sending the code back to your server for SMS authenticity.
 // But here we are just passing it to MainActivity
-                    if (otpReceiver != null && SMSUtils.checkMustContainWord(message, SMSReceiver.containWord)) {
+                    if (otpReceiver != null && SMSUtils.checkMustContainWord(
+                            message,
+                            SMSReceiver.containWord
+                        )
+                    ) {
                         val otp = SMSUtils.parseOTP(message, SMSReceiver.length)
-                        if(otp.isNotEmpty()) {
-                            otpReceiver?.onSMSReceived(
-                                otp
-                            )
+                        if (otp.isNotEmpty()) {
+                            if (SMSReceiver.messageAction != null) {
+                                SMSReceiver.messageAction?.let {
+                                    showSnackBar(otp, it)
+                                }
+                            } else {
+                                otpReceiver?.onSMSReceived(
+                                    otp
+                                )
+                            }
+
                         }
                     }
                 }
@@ -45,10 +58,23 @@ class SMSBroadcastReceiver : BroadcastReceiver() {
         }
     }
 
+    private fun showSnackBar(otp: String, messageAction: MessageAction) {
+        val mySnackbar = Snackbar.make(
+            messageAction.viewForSnackBar,
+            otp, Snackbar.LENGTH_INDEFINITE
+        )
+        val listner = View.OnClickListener {
+            otpReceiver?.onSMSButtonAction(otp)
+        }
+        mySnackbar.setAction(messageAction.actionButtonText, listner)
+        mySnackbar.show()
+    }
+
     interface OTPReceiveListener {
         fun onSMSReceiverStarted()
         fun onSMSReceiverFailed(exception: Exception?)
         fun onSMSReceived(message: String?)
+        fun onSMSButtonAction(message: String?)
         fun onSMSReceiverTimeOut()
     }
 }
